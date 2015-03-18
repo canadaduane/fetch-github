@@ -1,6 +1,12 @@
 require "octokit"
 require "addressable/template"
 
+if ARGV.size == 1
+  output_path = ARGV.first
+else
+  output_path = "."
+end
+
 client = Octokit::Client.new :access_token => ENV["GITHUB_ACCESS_TOKEN"]
 
 results =
@@ -28,7 +34,7 @@ while results.items.size > 0
 
     if response.data && response.data.size > 0
       puts "Writing #{filename} #{response.data.size/1024} KB"
-      File.open(filename, "w") do |file|
+      File.open(File.join(output_path, filename), "w") do |file|
         file.write response.data
       end
     else
