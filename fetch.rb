@@ -13,7 +13,7 @@ results =
   client.search_repos "language:javascript",
     :sort => "stars",
     :order => "desc",
-    :per_page => 2
+    :per_page => 100
 
 def items_of(results)
   if results.data
