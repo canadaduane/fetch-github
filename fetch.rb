@@ -13,10 +13,18 @@ results =
   client.search_repos "language:javascript",
     :sort => "stars",
     :order => "desc",
-    :per_page => 100
+    :per_page => 2
 
-while results.items.size > 0
-  for item in results.items
+def items_of(results)
+  if results.data
+    results.data.items
+  else
+    results.items
+  end
+end
+
+while items_of(results).size > 0
+  for item in items_of(results)
     filename = item.full_name.gsub("/", "-") + ".tgz"
     puts "Looking for #{filename} tarball"
 
