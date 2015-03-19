@@ -7,24 +7,22 @@ else
   output_path = "."
 end
 
-client = Octokit::Client.new :access_token => ENV["GITHUB_ACCESS_TOKEN"]
-
-results =
+def get_repos_page(client, page, per_page = 100)
+  puts "Reading page #{page}"
   client.search_repos "language:javascript",
     :sort => "stars",
     :order => "desc",
-    :per_page => 100
-
-def items_of(results)
-  if results.data
-    results.data.items
-  else
-    results.items
-  end
+    :per_page => per_page,
+    :page => page
 end
 
-while items_of(results).size > 0
-  for item in items_of(results)
+client = Octokit::Client.new :access_token => ENV["GITHUB_ACCESS_TOKEN"]
+
+page = 1
+results = get_repos_page(client, page)
+
+while results.items.size > 0
+  for item in results.items
     filename = item.full_name.gsub("/", "-") + ".tgz"
     puts "Looking for #{filename} tarball"
 
@@ -42,6 +40,7 @@ while items_of(results).size > 0
 
     if response.data && response.data.size > 0
       puts "Writing #{filename} #{response.data.size/1024} KB"
+      $stdout.flush
       File.open(File.join(output_path, filename), "w") do |file|
         file.write response.data
       end
@@ -59,5 +58,6 @@ while items_of(results).size > 0
     end
   end
 
-  results = client.last_response.rels[:next].get
+  page += 1
+  results = get_repos_page(client, page)
 end
