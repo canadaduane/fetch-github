@@ -22,6 +22,11 @@ end
 ARGV.each do |filename|
   if File.file?(filename)
     text = File.read(filename)
+      .encode('UTF-8', 'binary',
+        invalid: :replace,
+        undef: :replace,
+        replace: ''
+      )
     puts text.remove_comments.symbols_only
   else
     $stderr.puts "Skipping #{filename} (not a file)"
