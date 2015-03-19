@@ -20,6 +20,10 @@ class String
 end
 
 ARGV.each do |filename|
-  text = File.read(filename)
-  puts text.remove_comments.symbols_only
+  if File.file?(filename)
+    text = File.read(filename)
+    puts text.remove_comments.symbols_only
+  else
+    $stderr.puts "Skipping #{filename} (not a file)"
+  end
 end
