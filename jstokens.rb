@@ -1,18 +1,21 @@
 # This script converts a javascript file into a list-of-words
 
-$multiline_comment_re = /\/\*![^*]*\*+(?:[^*\/][^*]*\*+)*\//
+$comment_single_re = /\/\/(.*)?/
+$comment_multi_re  = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//
+$whitespace_re     = /\s+/
+$symbols_re        = /([\$_a-zA-Z][\$_a-zA-Z0-9]+)/
 
 class String
   def remove_comments
-    gsub($multiline_comment_re, ' ')
+    gsub($comment_multi_re, ' ').gsub($comment_single_re, ' ')
   end
 
   def normalize_whitespace
-    gsub(/\s+/, ' ')
+    gsub($whitespace_re, ' ')
   end
 
   def symbols_only
-    scan(/([\$_a-zA-Z][\$_a-zA-Z0-9]+)/).join(" ")
+    scan($symbols_re).join(" ")
   end
 end
 
